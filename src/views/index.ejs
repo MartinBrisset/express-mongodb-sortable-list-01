@@ -1,0 +1,58 @@
+<%- layout('layouts/main.ejs')%>
+
+  <div class="row mt-5">
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <form action="/add-product" method="POST">
+            <input type="text" name="name" class="form-control" placeholder="Product Name" autofocus>
+            <input type="text" name="price" class="form-control mt-2" placeholder="Product Price">
+            <button type="submit" class="btn btn-primary btn-block mt-2">Add Product</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <table class="table table-bordered bg-light table-hover">
+        <thead>
+          <tr class="headings">
+            <td>Name</td>
+            <td>Price</td>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach(function (product) { %>
+            <tr id="id_<%= product.id %>"> <!-- id is necessary for sorting -->
+              <td><%= product.name %></td>
+              <td><%= product.price %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <style>
+    .product-highlight {
+      background: red;
+    }
+    tbody tr:hover {
+      cursor: move; 
+    }
+  </style>
+
+  <% block('scripts').append(`<script>
+    $('tbody').sortable({
+      items: "tr:not('.headings')",
+      placeholder: 'bg-warning', //product-highlight
+      update: function() {
+        const ids = $('tbody').sortable('serialize');
+        const url = '/products/ordering';
+        $.post(url, ids, function(res) {
+          console.log(res);
+        });
+      }
+    });
+  </script>`)%>
